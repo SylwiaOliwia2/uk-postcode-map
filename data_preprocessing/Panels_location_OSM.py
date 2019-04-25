@@ -1,7 +1,9 @@
 import requests
-import json
 import os
 import collections
+import re
+import json
+import pickle
 overpass_url = "http://overpass-api.de/api/interpreter"
 
 folder_with_output_files = 'data'
@@ -41,6 +43,9 @@ nodes_solar = requests.get(overpass_url, params={'data': solar_nodes_query}).jso
 
 residential_panels = nodes_solar["elements"] + first_nodes_from_ways
 
+with open(os.path.join(dirname, folder_with_output_files, "residential_panels.pkl"), 'wb') as f:
+    pickle.dump(residential_panels, f)
+
 ###################################################################################################
 ## Residential panels
 ###################################################################################################
@@ -49,21 +54,16 @@ json_parameters = [{"latitude": panel["lat"], "longitude": panel["lon"], "radius
                    for panel in residential_panels]
 
 post_codes = []
+not_post_codes = [] # to check if any panels hawe no postcodes within radius. For 1000m there arte 140 Unknown (no postal code within 1000m) which is acceptable
 ## use api to request post codes
 for n in range(0, len(residential_panels), 100):
     json_subset = json_parameters[n:n+100]
-    port_response = requests.post("https://api.postcodes.io/postcodes", json={"geolocations": json_subset}).json()
-    post_codes = post_codes + [x["result"][0]["outcode"] for x in port_response["result"] if x["result"]]
-    not_post_codes = [x for x in port_response["result"] if not x["result"]]
+    post_response = requests.post("https://api.postcodes.io/postcodes", json={"geolocations": json_subset}).json()
+    post_codes = post_codes + [x["result"][0]["outcode"] for x in post_response["result"] if x["result"]]
+not_post_codes = not_post_codes + [x for x in post_response["result"] if not x["result"]]
+post_codes_major = [re.sub(r"\d", "", p.upper().strip()) for p in post_codes]
+post_codes_frequency = dict(collections.Counter(post_codes_major))
 
+with open(os.path.join(dirname, folder_with_output_files, "UK_OSM_panels.json"), 'w') as fp:
+    json.dump(post_codes_frequency, fp)
 
-### teraz dostań post codes+
-post_url = "https://api.postcodes.io/postcodes"
-port_response = requests.post(post_url,  json={"geolocations": json_parameters}).json()
-post_codes = [x["result"][0]["outcode"] for x in port_response["result"] if x["result"]]
-not_post_codes = [x for x in port_response["result"] if not x["result"]]
-post_codes_frequency = dict(collections.Counter(post_codes))
-
-post_codes_frequency.to_json( os.path.join(dirname, folder_with_output_files, "UK_OSM_pannels.json"))
-
-#print(json.dumps(port_response["result"][0], indent=4, sort_keys=True))
