@@ -4,8 +4,12 @@
 <meta charset=utf-8 />
 <title>TopoJSON data</title>
 <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<!--<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script> -->
 <script src='https://api.mapbox.com/mapbox.js/v2.3.0/mapbox.js'></script>
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
 <link href='https://api.mapbox.com/mapbox.js/v2.3.0/mapbox.css' rel='stylesheet' />
+<!--<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" /> -->
 <link rel="stylesheet" href="postcodes.css">
 <style>
   body { margin:0; padding:0; }
@@ -19,20 +23,48 @@
 
 <script>
 L.mapbox.accessToken = 'pk.eyJ1IjoiZW5qYWxvdCIsImEiOiIzOTJmMjBiZmI2NGQ2ZjAzODhiMzhiOGI2MTI1YTk4YSJ9.sIOXXU3TPp5dLg_L3cUxhQ';
-var map = L.mapbox.map('map', 'mapbox.streets').setView([51, -0.02], 5);
 
-var customLayer = omnivore.topojson('https://raw.githubusercontent.com/SylwiaOliwia2/uk-postcode-map/master/frontend/uk-postcode-area.json')
-// finalnie zadziałało na podstawie tego: https://gist.github.com/mpmckenna8/60910c22b47777967704
+//////////////////////////////////////////////////////////////////////////////
+//LAYERS
+
+var style_land = L.mapbox.styleLayer('mapbox://styles/sylwiamielnicka/cjuzcmscj1zlo1fp9vupl3qu0');
+var style_administrative_names = L.mapbox.styleLayer('mapbox://styles/sylwiamielnicka/cjuzd03d92kqg1fov80kfonjk');
+var panels_per_post_code = omnivore.topojson('https://raw.githubusercontent.com/SylwiaOliwia2/uk-postcode-map/master/frontend/uk-postcode-area.json')
+// source: https://gist.github.com/mpmckenna8/60910c22b47777967704
+// styles for TopoJson: https://leafletjs.com/examples/geojson/
     .on('ready',function(layer){
       this.eachLayer(function(dist){
-        if(dist.toGeoJSON().id === "AB"){
-              dist.setStyle({color:'orange', fill:'orange'})
-}
-dist.bindPopup(dist.toGeoJSON().id);
+        dist.bindPopup(dist.toGeoJSON().id);
+        dist.on('mouseover', function (e) {this.openPopup()});
+        dist.on('mouseout', function (e) {this.closePopup()});
+        dist.setStyle({opacity:1, color: '#404040', 'weight':2, fillOpacity: 0.6})
+        switch(dist.toGeoJSON().id){
+          case 'AB': return dist.setStyle({fillColor:'#907368'});
+          case 'PH': return dist.setStyle({fillColor:'#efb85f'});
+          case 'OX': return dist.setStyle({fillColor:'#404040'});
+          case 'SA': return dist.setStyle({fillColor:'#ffc857'});
+        }
       })
-    })
+    });
 
-customLayer.addTo(map);
+//var map = L.map('map').setView([53.4, 2.9916], 6);
+var map = L.map('map', {center: [53.4, 2.9916],zoom: 6
+  ,layers: [style_land, panels_per_post_code, style_administrative_names]
+});
+
+// Order of layers
+/*
+var baseMaps = {"style_land": style_land, "panels_per_post_code": style_administrative_names};
+var overlayMaps = {"style_administrative_names": panels_per_post_code};
+
+L.control.layers(baseMaps, overlayMaps).addTo(map);
+*/
+// add layers to the map
+/*
+panels_per_post_code.addTo(map);
+style_land.addTo(map);
+style_administrative_names.addTo(map);
+*/
 
 </script>
 </body>
