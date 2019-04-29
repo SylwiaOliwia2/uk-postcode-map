@@ -13,7 +13,7 @@ post_code_stats_files = [filename for filename in os.listdir(folder) if filename
 installed_panels_locations = []
 for n, file in enumerate(post_code_stats_files):
     panels_per_minor_postcode = pd.read_csv(folder + "/" + file, header=0, index_col=0).reset_index()
-    panels_per_minor_postcode.ix[:, 0] = panels_per_minor_postcode.ix[:, 0].str.upper().replace(to_replace=r'\d', value='', regex=True).str.strip()
+    panels_per_minor_postcode.ix[:, 0] = panels_per_minor_postcode.ix[:, 0].str.upper().replace(to_replace=r'\d.*', value='', regex=True).str.strip()
     panels_per_major_postcode = panels_per_minor_postcode.pivot_table(index=panels_per_minor_postcode.columns[0]
                                                                       , values = panels_per_minor_postcode.columns[1], aggfunc='sum')
     installed_panels_locations.append(panels_per_major_postcode)

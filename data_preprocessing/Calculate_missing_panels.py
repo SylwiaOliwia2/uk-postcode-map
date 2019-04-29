@@ -18,3 +18,4 @@ with open(os.path.join(dirname, folder_with_output_files, "panels_not_plotted_on
     json.dump(panels_not_plotted_on_OSM, fp)
 
 
+

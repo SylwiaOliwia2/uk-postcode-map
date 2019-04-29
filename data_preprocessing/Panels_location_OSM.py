@@ -8,10 +8,10 @@ overpass_url = "http://overpass-api.de/api/interpreter"
 
 folder_with_output_files = 'data'
 dirname = os.path.dirname(__file__)
-###################################################################################################
-## Get data of solar panels in the UK
-###################################################################################################
-# get information about all solar panels in UK, represented as WAYS
+##################################################################################################
+# Get data of solar panels in the UK
+##################################################################################################
+#get information about all solar panels in UK, represented as WAYS
 solar_ways_query = """
     [out:json];
     area["name"="United Kingdom"]->.searchArea;
@@ -61,7 +61,7 @@ for n in range(0, len(residential_panels), 100):
     post_response = requests.post("https://api.postcodes.io/postcodes", json={"geolocations": json_subset}).json()
     post_codes = post_codes + [x["result"][0]["outcode"] for x in post_response["result"] if x["result"]]
 not_post_codes = not_post_codes + [x for x in post_response["result"] if not x["result"]]
-post_codes_major = [re.sub(r"\d", "", p.upper().strip()) for p in post_codes]
+post_codes_major = [re.sub(r"\d.*", "", p.upper().strip()) for p in post_codes]
 post_codes_frequency = dict(collections.Counter(post_codes_major))
 
 with open(os.path.join(dirname, folder_with_output_files, "UK_OSM_panels.json"), 'w') as fp:
