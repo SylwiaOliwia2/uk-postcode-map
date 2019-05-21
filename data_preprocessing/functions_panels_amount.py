@@ -14,9 +14,11 @@ def panelsFromFederalData(folder_with_input_files='UK_Installed_pannels', folder
     '''
     Aggregate number of installed panels per postcode district form folder "UK_Installed_pannels".
     The files in the folder were preciously manually aggregated from federal data: https://www.ofgem.gov.uk/publications-and-updates/feed-tariff-installation-report-31-march-2019 and saved as csv
+    #TODO: automate creating CSV files (currently done manually in excel)
     Each file (csv) must have the following columns:
     - Installation Postcode: postcodes,
     - Count - Technology: total number of panels for given postcode
+    !!! When creating pivot in excel, only technology=photovoltaics should be used
 
     :param folder_with_input_files: name of the folder with preprocessed federal data (stored as multiple CSV).
             Name without the path. Folder should be located in the same directory as functions_panels_amount file.
