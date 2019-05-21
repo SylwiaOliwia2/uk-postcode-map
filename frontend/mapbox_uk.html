@@ -11,8 +11,8 @@
       integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
       crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
-    integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
-    crossorigin=""></script>
+      integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+      crossorigin=""></script>
     <script type="text/javascript" src="postcodes.js"></script>
 
   <style>
@@ -24,18 +24,38 @@
     <div id='map'></div>
     <script>
       mapboxgl.accessToken = 'pk.eyJ1IjoiZW5qYWxvdCIsImEiOiIzOTJmMjBiZmI2NGQ2ZjAzODhiMzhiOGI2MTI1YTk4YSJ9.sIOXXU3TPp5dLg_L3cUxhQ';
+      // create map
       var map = L.map('map').setView([53.4, 2.9916], 6);
+
+      // update postcodes json with values
+      var proxyUrl = 'https://cors-anywhere.herokuapp.com/',
+          targetUrl = 'https://sylwiamielnicka.com/wp-content/themes/baskerville-child/js/map_shapes/panels_stats.json'
+      fetch(proxyUrl + targetUrl)
+        .then(response => response.json())
+        .then(function(json){
+          for (var i=0; i<postcodes.features.length; i++ ){
+            var name = postcodes.features[i].properties.name
+            var value = json.percent[name]
+              postcodes.features[i].properties.value = (typeof value === 'undefined') ? 0 : value * 100;
+          }
+      });
+
+      // set pane text_layer as top layer
       map.createPane('text_layer');
       map.getPane('text_layer').style.zIndex = 650;
 
+      // load layers
       var style_land = L.tileLayer('https://api.mapbox.com/styles/v1/sylwiamielnicka/cjuzcmscj1zlo1fp9vupl3qu0/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic3lsd2lhbWllbG5pY2thIiwiYSI6ImNqdWEzZGd3NDAwbXE0ZHBic2FmczAzZnMifQ.OpE-UY5HM79aKkCrivTQtw');
       var style_administrative_names = L.tileLayer('https://api.mapbox.com/styles/v1/sylwiamielnicka/cjuzd03d92kqg1fov80kfonjk/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic3lsd2lhbWllbG5pY2thIiwiYSI6ImNqdWEzZGd3NDAwbXE0ZHBic2FmczAzZnMifQ.OpE-UY5HM79aKkCrivTQtw',
           {pane: 'text_layer'});
-      //var geojson = L.geoJson(postcodes).addTo(map);
+      var geoJsonLayer = L.geoJson(postcodes
+            , {onEachFeature: function (feature, layer) {
+                  layer.bindPopup(feature.properties.name+'<br>'+feature.properties.value);
+            }
+      });
 
-     var geoJsonLayer = L.geoJson(postcodes)
-     geoJsonLayer.addTo(map);
-
+      // add layers to the map
+      geoJsonLayer.addTo(map);
       style_land.addTo(map);
       style_administrative_names.addTo(map);
 
