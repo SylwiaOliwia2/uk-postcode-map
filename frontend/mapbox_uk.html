@@ -1,180 +1,45 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset=utf-8 />
-<title>TopoJSON data</title>
-<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-<script src='https://api.mapbox.com/mapbox.js/v2.3.0/mapbox.js'></script>
-<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
-<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
-<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js'></script>
-<link href='https://api.mapbox.com/mapbox.js/v2.3.0/mapbox.css' rel='stylesheet' />
-<link rel="stylesheet" href="postcodes.css">
-<style>
-  body { margin:0; padding:0; }
-  #map { position:absolute; top:0; bottom:0; width:100%; }
-</style>
-</head>
-<body>
-  <div id='map'></div>
+  <head>
+    <meta charset='utf-8' />
+    <title>Add a GeoJSON polygon</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
-  <script>
-      L.mapbox.accessToken = 'pk.eyJ1IjoiZW5qYWxvdCIsImEiOiIzOTJmMjBiZmI2NGQ2ZjAzODhiMzhiOGI2MTI1YTk4YSJ9.sIOXXU3TPp5dLg_L3cUxhQ';
-      //////////////////////////////////////////////////////////////////////////////
-      //LAYERS
-      var map = L.map('map', {center: [53.4, 2.9916],zoom: 6
-        //,layers: [style_land, panels_per_post_code, style_administrative_names]
-      });
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.54.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.54.0/mapbox-gl.js'></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+    integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+    crossorigin=""></script>
+    <script type="text/javascript" src="postcodes.js"></script>
 
-      var style_land = L.mapbox.styleLayer('mapbox://styles/sylwiamielnicka/cjuzcmscj1zlo1fp9vupl3qu0');
-      var style_administrative_names = L.mapbox.styleLayer('mapbox://styles/sylwiamielnicka/cjuzd03d92kqg1fov80kfonjk');
-      var panels_per_post_code = omnivore.topojson('https://raw.githubusercontent.com/SylwiaOliwia2/uk-postcode-map/master/frontend/uk-postcode-area.json')
-      // source: https://gist.github.com/mpmckenna8/60910c22b47777967704
-      // styles for TopoJson: https://leafletjs.com/examples/geojson/
-          .on('ready',function(layer){
-            this.eachLayer(function(dist){
-              dist.bindPopup(dist.toGeoJSON().id);
-              //dist.on('mouseover', function (e) {this.openPopup()});
-              //dist.on('mouseout', function (e) {this.closePopup()});
-              dist.setStyle({opacity:1, color: '#404040', 'weight':2, fillOpacity: 0.6})
-              switch(dist.toGeoJSON().id){
-                case 'AB': return dist.setStyle({fillColor:'#ffc857'});
-                case 'AL': return dist.setStyle({fillColor:'#ffc857'});
-                case 'B': return dist.setStyle({fillColor:'#ffc857'});
-                case 'BA': return dist.setStyle({fillColor:'#ffc857'});
-                case 'BB': return dist.setStyle({fillColor:'#ffc857'});
-                case 'BD': return dist.setStyle({fillColor:'#ffc857'});
-                case 'BH': return dist.setStyle({fillColor:'#ffc857'});
-                case 'BL': return dist.setStyle({fillColor:'#ffc857'});
-                case 'BN': return dist.setStyle({fillColor:'#ffc857'});
-                case 'BR': return dist.setStyle({fillColor:'#ffc857'});
-                case 'BS': return dist.setStyle({fillColor:'#ffc857'});
-                case 'CA': return dist.setStyle({fillColor:'#ffc857'});
-                case 'CB': return dist.setStyle({fillColor:'#ffc857'});
-                case 'CF': return dist.setStyle({fillColor:'#ffc857'});
-                case 'CH': return dist.setStyle({fillColor:'#ffc857'});
-                case 'CM': return dist.setStyle({fillColor:'#ffc857'});
-                case 'CO': return dist.setStyle({fillColor:'#ffc857'});
-                case 'CR': return dist.setStyle({fillColor:'#ffc857'});
-                case 'CT': return dist.setStyle({fillColor:'#ffc857'});
-                case 'CV': return dist.setStyle({fillColor:'#efb85f'});
-                case 'CW': return dist.setStyle({fillColor:'#ffc857'});
-                case 'DA': return dist.setStyle({fillColor:'#ffc857'});
-                case 'DD': return dist.setStyle({fillColor:'#ffc857'});
-                case 'DE': return dist.setStyle({fillColor:'#ffc857'});
-                case 'DG': return dist.setStyle({fillColor:'#ffc857'});
-                case 'DH': return dist.setStyle({fillColor:'#ffc857'});
-                case 'DL': return dist.setStyle({fillColor:'#ffc857'});
-                case 'DN': return dist.setStyle({fillColor:'#ffc857'});
-                case 'DT': return dist.setStyle({fillColor:'#ffc857'});
-                case 'DY': return dist.setStyle({fillColor:'#ffc857'});
-                case 'E': return dist.setStyle({fillColor:'#ffc857'});
-                case 'EC': return dist.setStyle({fillColor:'#ffc857'});
-                case 'EH': return dist.setStyle({fillColor:'#ffc857'});
-                case 'EN': return dist.setStyle({fillColor:'#ffc857'});
-                case 'EX': return dist.setStyle({fillColor:'#ffc857'});
-                case 'FK': return dist.setStyle({fillColor:'#ffc857'});
-                case 'FY': return dist.setStyle({fillColor:'#ffc857'});
-                case 'G': return dist.setStyle({fillColor:'#ffc857'});
-                case 'GL': return dist.setStyle({fillColor:'#ffc857'});
-                case 'GU': return dist.setStyle({fillColor:'#ffc857'});
-                case 'HA': return dist.setStyle({fillColor:'#ffc857'});
-                case 'HD': return dist.setStyle({fillColor:'#dfa965'});
-                case 'HG': return dist.setStyle({fillColor:'#ffc857'});
-                case 'HP': return dist.setStyle({fillColor:'#ffc857'});
-                case 'HR': return dist.setStyle({fillColor:'#ffc857'});
-                case 'HS': return dist.setStyle({fillColor:'#ffc857'});
-                case 'HU': return dist.setStyle({fillColor:'#ffc857'});
-                case 'HX': return dist.setStyle({fillColor:'#ffc857'});
-                case 'IG': return dist.setStyle({fillColor:'#ffc857'});
-                case 'IP': return dist.setStyle({fillColor:'#ffc857'});
-                case 'IV': return dist.setStyle({fillColor:'#ffc857'});
-                case 'KA': return dist.setStyle({fillColor:'#ffc857'});
-                case 'KT': return dist.setStyle({fillColor:'#ffc857'});
-                case 'KW': return dist.setStyle({fillColor:'#ffc857'});
-                case 'KY': return dist.setStyle({fillColor:'#ffc857'});
-                case 'L': return dist.setStyle({fillColor:'#ffc857'});
-                case 'LA': return dist.setStyle({fillColor:'#ffc857'});
-                case 'LD': return dist.setStyle({fillColor:'#ffc857'});
-                case 'LE': return dist.setStyle({fillColor:'#ffc857'});
-                case 'LL': return dist.setStyle({fillColor:'#ffc857'});
-                case 'LN': return dist.setStyle({fillColor:'#ffc857'});
-                case 'LS': return dist.setStyle({fillColor:'#ffc857'});
-                case 'LU': return dist.setStyle({fillColor:'#ffc857'});
-                case 'M': return dist.setStyle({fillColor:'#ffc857'});
-                case 'ME': return dist.setStyle({fillColor:'#ffc857'});
-                case 'MK': return dist.setStyle({fillColor:'#ffc857'});
-                case 'ML': return dist.setStyle({fillColor:'#ffc857'});
-                case 'N': return dist.setStyle({fillColor:'#ffc857'});
-                case 'NE': return dist.setStyle({fillColor:'#ffc857'});
-                case 'NG': return dist.setStyle({fillColor:'#dfa965'});
-                case 'NN': return dist.setStyle({fillColor:'#ffc857'});
-                case 'NP': return dist.setStyle({fillColor:'#ffc857'});
-                case 'NR': return dist.setStyle({fillColor:'#ffc857'});
-                case 'NW': return dist.setStyle({fillColor:'#ffc857'});
-                case 'OL': return dist.setStyle({fillColor:'#ffc857'});
-                case 'OX': return dist.setStyle({fillColor:'#ffc857'});
-                case 'PA': return dist.setStyle({fillColor:'#ffc857'});
-                case 'PE': return dist.setStyle({fillColor:'#ffc857'});
-                case 'PH': return dist.setStyle({fillColor:'#ffc857'});
-                case 'PL': return dist.setStyle({fillColor:'#ffc857'});
-                case 'PO': return dist.setStyle({fillColor:'#ffc857'});
-                case 'PR': return dist.setStyle({fillColor:'#ffc857'});
-                case 'RG': return dist.setStyle({fillColor:'#ffc857'});
-                case 'RH': return dist.setStyle({fillColor:'#ffc857'});
-                case 'RM': return dist.setStyle({fillColor:'#ffc857'});
-                case 'S': return dist.setStyle({fillColor:'#ffc857'});
-                case 'SA': return dist.setStyle({fillColor:'#ffc857'});
-                case 'SE': return dist.setStyle({fillColor:'#ffc857'});
-                case 'SG': return dist.setStyle({fillColor:'#ffc857'});
-                case 'SK': return dist.setStyle({fillColor:'#ffc857'});
-                case 'SL': return dist.setStyle({fillColor:'#ffc857'});
-                case 'SM': return dist.setStyle({fillColor:'#ffc857'});
-                case 'SN': return dist.setStyle({fillColor:'#ffc857'});
-                case 'SO': return dist.setStyle({fillColor:'#ffc857'});
-                case 'SP': return dist.setStyle({fillColor:'#ffc857'});
-                case 'SR': return dist.setStyle({fillColor:'#ffc857'});
-                case 'SS': return dist.setStyle({fillColor:'#ffc857'});
-                case 'ST': return dist.setStyle({fillColor:'#ffc857'});
-                case 'SW': return dist.setStyle({fillColor:'#ffc857'});
-                case 'SY': return dist.setStyle({fillColor:'#ffc857'});
-                case 'TA': return dist.setStyle({fillColor:'#efb85f'});
-                case 'TD': return dist.setStyle({fillColor:'#ffc857'});
-                case 'TF': return dist.setStyle({fillColor:'#ffc857'});
-                case 'TN': return dist.setStyle({fillColor:'#ffc857'});
-                case 'TQ': return dist.setStyle({fillColor:'#ffc857'});
-                case 'TR': return dist.setStyle({fillColor:'#ffc857'});
-                case 'TS': return dist.setStyle({fillColor:'#ffc857'});
-                case 'TW': return dist.setStyle({fillColor:'#ffc857'});
-                case 'UB': return dist.setStyle({fillColor:'#ffc857'});
-                case 'UNKNOWN': return dist.setStyle({fillColor:'#ffc857'});
-                case 'W': return dist.setStyle({fillColor:'#ffc857'});
-                case 'WA': return dist.setStyle({fillColor:'#ffc857'});
-                case 'WC': return dist.setStyle({fillColor:'#ffc857'});
-                case 'WD': return dist.setStyle({fillColor:'#ffc857'});
-                case 'WF': return dist.setStyle({fillColor:'#ffc857'});
-                case 'WN': return dist.setStyle({fillColor:'#ffc857'});
-                case 'WR': return dist.setStyle({fillColor:'#ffc857'});
-                case 'WS': return dist.setStyle({fillColor:'#ffc857'});
-                case 'WV': return dist.setStyle({fillColor:'#ffc857'});
-                case 'YO': return dist.setStyle({fillColor:'#ffc857'});
-                case 'ZE': return dist.setStyle({fillColor:'#ffc857'});
-              }
-            })
-          });
+  <style>
+    body { margin:0; padding:0; }
+    #map { position:absolute; top:0; bottom:0; width:100%; }
+  </style>
+  </head>
+  <body>
+    <div id='map'></div>
+    <script>
+      mapboxgl.accessToken = 'pk.eyJ1IjoiZW5qYWxvdCIsImEiOiIzOTJmMjBiZmI2NGQ2ZjAzODhiMzhiOGI2MTI1YTk4YSJ9.sIOXXU3TPp5dLg_L3cUxhQ';
+      var map = L.map('map').setView([53.4, 2.9916], 6);
+      map.createPane('text_layer');
+      map.getPane('text_layer').style.zIndex = 650;
 
-      //var map = L.map('map').setView([53.4, 2.9916], 6);
+      var style_land = L.tileLayer('https://api.mapbox.com/styles/v1/sylwiamielnicka/cjuzcmscj1zlo1fp9vupl3qu0/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic3lsd2lhbWllbG5pY2thIiwiYSI6ImNqdWEzZGd3NDAwbXE0ZHBic2FmczAzZnMifQ.OpE-UY5HM79aKkCrivTQtw');
+      var style_administrative_names = L.tileLayer('https://api.mapbox.com/styles/v1/sylwiamielnicka/cjuzd03d92kqg1fov80kfonjk/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic3lsd2lhbWllbG5pY2thIiwiYSI6ImNqdWEzZGd3NDAwbXE0ZHBic2FmczAzZnMifQ.OpE-UY5HM79aKkCrivTQtw',
+          {pane: 'text_layer'});
+      //var geojson = L.geoJson(postcodes).addTo(map);
+
+     var geoJsonLayer = L.geoJson(postcodes)
+     geoJsonLayer.addTo(map);
+
       style_land.addTo(map);
-      panels_per_post_code.addTo(map);
       style_administrative_names.addTo(map);
-      // Order of layers
-      /*
-      var baseMaps = {"style_land": style_land, "panels_per_post_code": style_administrative_names};
-      var overlayMaps = {"style_administrative_names": panels_per_post_code};
 
-      L.control.layers(baseMaps, overlayMaps).addTo(map);
-      */
+    </script>
 
-  </script>
-</body>
+  </body>
 </html>
