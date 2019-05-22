@@ -1,4 +1,5 @@
 import os
+import codecs
 import pandas as pd
 import requests
 import collections
@@ -142,7 +143,7 @@ def getPostCodesOSMPannels(osm_queried_panels, osm_postcodes_from_json=False, ra
     return post_codes_frequency
 
 
-def savePanelsPerPostcode(panels_federal_data_aggr_json, panels_from_OSM_aggr_json, folder_with_output_files='data'):
+def summaryPanelsPerPostcode(panels_federal_data_aggr_json, panels_from_OSM_aggr_json, folder_with_output_files='data'):
     '''
     :param panels_federal_data_aggr_json: aggregated statistics of installed panels per postcode (from federal data)
     :param panels_from_OSM_aggr_json: aggregated statistics of installed panels per postcode (from OSM)
@@ -154,16 +155,36 @@ def savePanelsPerPostcode(panels_federal_data_aggr_json, panels_from_OSM_aggr_js
 
     # Calculate statistics for panels placed on OSM map
     nominal = {key: panels_from_OSM_aggr_json.get(key, 0) for key in panels_federal_data_aggr_json.keys()}
-    percent = {key: nominal[key] / panels_federal_data_aggr_json[key] for key in panels_federal_data_aggr_json.keys()}
+    percent = {key: nominal[key] / panels_federal_data_aggr_json[key] * 100 for key in panels_federal_data_aggr_json.keys()}
     panels_plotted_on_OSM = {"nominal": {k: int(v) for k, v in nominal.items()}, "percent": percent}
 
     # TODO: Deal with UNKNOWN in UK_installed_panels_summary ?
     with open(os.path.join(dirname, folder_with_output_files, "panels_stats.json"), 'w') as fp:
         json.dump(panels_plotted_on_OSM, fp)
+    return panels_plotted_on_OSM
+
+
+def updateSaveGeojson(panels_plotted_on_OSM):
+
+    dirname = os.path.dirname(__file__)
+    postcodes_frequency = json.load(codecs.open(os.path.join(dirname, "data", "postcodes.json"), 'r', 'utf-8-sig'))
+
+    for n, f in enumerate(postcodes_frequency["features"]):
+        postcode = f["properties"]["name"]
+        try:
+            postcodes_frequency["features"][n]["properties"]["value_nominal"] = panels_plotted_on_OSM["nominal"][postcode]
+            postcodes_frequency["features"][n]["properties"]["value_percent"] = panels_plotted_on_OSM["percent"][postcode]
+        except:
+            postcodes_frequency["features"][n]["properties"]["value_nominal"] = 0
+            postcodes_frequency["features"][n]["properties"]["value_percent"] = 0
+
+    with open(os.path.join(dirname, "..", "frontend", "postcodes_updated.json"), 'w') as fp:
+        json.dump(postcodes_frequency, fp)
 
 
 if __name__ == '__main__':
     panelsFromFederalData()
     getSolarPanelsFromOSM()
     getPostCodesOSMPannels()
-    savePanelsPerPostcode()
+    summaryPanelsPerPostcode()
+    updateSaveGeojson()
