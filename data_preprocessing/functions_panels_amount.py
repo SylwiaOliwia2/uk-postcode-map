@@ -46,13 +46,16 @@ def panelsFromFederalData(folder_with_input_files='UK_Installed_pannels', folder
 
     # merge data from each CSV file
     number_of_panels = pd.concat(installed_panels_locations, axis=1, sort=True).fillna(0).astype(int).sum(axis=1)
+    with open(os.path.join(dirname, folder_with_output_files, "OSM_federal.json"), 'w') as fp:
+        json.dump(number_of_panels.to_json(), fp)
+
     return number_of_panels.to_json()
 
 
-def getSolarPanelsFromOSM(osm_form_pickle=False, folder_with_output_files='data', picklename="residential_panels"):
+def getSolarPanelsFromOSM(osm_from_pickle=False, folder_with_output_files='data', picklename="residential_panels"):
     '''
     Query OpenStreetMap to get all solar pannels within a country. Optionally - load pickled data
-    :param osm_form_pickle: bool, if Solar Panels data should be loaded from pickle instead of querying from OSM.
+    :param osm_from_pickle: bool, if Solar Panels data should be loaded from pickle instead of querying from OSM.
             data from pickle are faster, but may be outdated. Should be used for development purposes or when unable to query OSM
     :param folder_with_output_files: name of the folder with preprocessed federal data (stored as multiple CSV).
             Name without the path. Folder should be located in the same directory as functions_panels_amount file.
@@ -61,7 +64,7 @@ def getSolarPanelsFromOSM(osm_form_pickle=False, folder_with_output_files='data'
     '''
     dirname = os.path.dirname(__file__)
 
-    if osm_form_pickle:
+    if osm_from_pickle:
         # TODO: if no pickled data in folder- query OSM
         with open(os.path.join(dirname, folder_with_output_files, "residential_panels.pkl"), 'rb') as f:
             osm_queried_panels = pickle.load(f)
@@ -154,8 +157,8 @@ def summaryPanelsPerPostcode(panels_federal_data_aggr_json, panels_from_OSM_aggr
     dirname = os.path.dirname(__file__)
 
     # Calculate statistics for panels placed on OSM map
-    nominal = {key: panels_from_OSM_aggr_json.get(key, 0) for key in panels_federal_data_aggr_json.keys()}
-    percent = {key: nominal[key] / panels_federal_data_aggr_json[key] * 100 for key in panels_federal_data_aggr_json.keys()}
+    nominal = {key: panels_from_OSM_aggr_json.get(key, 0) for key in panels_from_OSM_aggr_json.keys()}
+    percent = {key: panels_from_OSM_aggr_json.get(key, 0) / panels_federal_data_aggr_json[key] * 100 for key in panels_federal_data_aggr_json.keys()}
     panels_plotted_on_OSM = {"nominal": {k: int(v) for k, v in nominal.items()}, "percent": percent}
 
     # TODO: Deal with UNKNOWN in UK_installed_panels_summary ?
@@ -171,12 +174,11 @@ def updateSaveGeojson(panels_plotted_on_OSM):
 
     for n, f in enumerate(postcodes_frequency["features"]):
         postcode = f["properties"]["name"]
-        try:
-            postcodes_frequency["features"][n]["properties"]["value_nominal"] = panels_plotted_on_OSM["nominal"][postcode]
-            postcodes_frequency["features"][n]["properties"]["value_percent"] = panels_plotted_on_OSM["percent"][postcode]
-        except:
-            postcodes_frequency["features"][n]["properties"]["value_nominal"] = 0
-            postcodes_frequency["features"][n]["properties"]["value_percent"] = 0
+        ## for each postcode in file with geolocations:
+        # return nominal_value or 0 if not found
+        # return percent_value or zero if not found
+        postcodes_frequency["features"][n]["properties"]["value_nominal"] = panels_plotted_on_OSM["nominal"].get(postcode, 0)
+        postcodes_frequency["features"][n]["properties"]["value_percent"] = panels_plotted_on_OSM["percent"].get(postcode, 0)
 
     with open(os.path.join(dirname, "..", "frontend", "postcodes_updated.json"), 'w') as fp:
         json.dump(postcodes_frequency, fp)
