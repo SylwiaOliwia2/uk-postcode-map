@@ -13,7 +13,6 @@
     <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
       integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
       crossorigin=""></script>
-    <script type="text/javascript" src="postcodes.js"></script>
 
   <style>
     body { margin:0; padding:0; }
@@ -23,22 +22,55 @@
   <body>
     <div id='map'></div>
     <script>
+
       mapboxgl.accessToken = 'pk.eyJ1IjoiZW5qYWxvdCIsImEiOiIzOTJmMjBiZmI2NGQ2ZjAzODhiMzhiOGI2MTI1YTk4YSJ9.sIOXXU3TPp5dLg_L3cUxhQ';
       // create map
       var map = L.map('map').setView([53.4, 2.9916], 6);
 
       // update postcodes json with values
       var proxyUrl = 'https://cors-anywhere.herokuapp.com/',
-          targetUrl = 'https://sylwiamielnicka.com/wp-content/themes/baskerville-child/js/map_shapes/panels_stats.json'
+          // TODO: add final destination in the server, where the whole process is being stored
+          targetUrl = 'https://sylwiamielnicka.com/wp-content/themes/baskerville-child/js/map_shapes/postcodes_updated.json'
       fetch(proxyUrl + targetUrl)
         .then(response => response.json())
-        .then(function(json){
-          for (var i=0; i<postcodes.features.length; i++ ){
-            var name = postcodes.features[i].properties.name
-            var value = json.percent[name]
-              postcodes.features[i].properties.value = (typeof value === 'undefined') ? 0 : value * 100;
-          }
-      });
+        .then(json => {
+          var geojson_percent = L.geoJson(json // apply colors to postcodes and add them to the map
+                              , { style: {opacity:1, color: '#191a1a', 'weight':1, fillOpacity: 0.9}
+                                , onEachFeature: function (feature, layer) {
+                                    layer.bindPopup(feature.properties.name + '<br>' + feature.properties.value_percent.toFixed(2) + '% panels added to OSM.');
+                                    if (feature.properties.value_percent == 0) {return layer.setStyle({fillColor:'#404040'})}
+                                    else if (feature.properties.value_percent < 10) {return layer.setStyle({fillColor:'#504c4c'})}
+                                    else if (feature.properties.value_percent < 20) {return layer.setStyle({fillColor:'#605655'})}
+                                    else if (feature.properties.value_percent < 30) {return layer.setStyle({fillColor:'#70605d'})}
+                                    else if (feature.properties.value_percent < 40) {return layer.setStyle({fillColor:'#806a64'})}
+                                    else if (feature.properties.value_percent < 50) {return layer.setStyle({fillColor:'#907368'})}
+                                    else if (feature.properties.value_percent < 60) {return layer.setStyle({fillColor:'#a07d6b'})}
+                                    else if (feature.properties.value_percent < 70) {return layer.setStyle({fillColor:'#af866c'})}
+                                    else if (feature.properties.value_percent < 80) {return layer.setStyle({fillColor:'#bf916b'})}
+                                    else if (feature.properties.value_percent < 90) {return layer.setStyle({fillColor:'#dfa965'})}
+                                    else if (feature.properties.value_percent < 100) {return layer.setStyle({fillColor:'#efb85f'})}
+                                    else if (feature.properties.value_percent >= 100) {return layer.setStyle({fillColor:'#ffc857'})};
+                              }}).addTo(map);
+          var geojson_nominal = L.geoJson(json // apply colors to postcodes and add them to the map
+                              , { style: {opacity:1, color: '#191a1a', 'weight':1, fillOpacity: 0.9}
+                                , onEachFeature: function (feature, layer) {
+                                    layer.bindPopup(feature.properties.name + '<br>' + feature.properties.value_nominal + ' panels added to OSM.');
+                                    if (feature.properties.value_nominal == 0) {return layer.setStyle({fillColor:'#404040'})}
+                                    else if (feature.properties.value_nominal < 10) {return layer.setStyle({fillColor:'#504c4c'})}
+                                    else if (feature.properties.value_nominal < 30) {return layer.setStyle({fillColor:'#605655'})}
+                                    else if (feature.properties.value_nominal < 50) {return layer.setStyle({fillColor:'#70605d'})}
+                                    else if (feature.properties.value_nominal < 100) {return layer.setStyle({fillColor:'#806a64'})}
+                                    else if (feature.properties.value_nominal < 150) {return layer.setStyle({fillColor:'#907368'})}
+                                    else if (feature.properties.value_nominal < 200) {return layer.setStyle({fillColor:'#a07d6b'})}
+                                    else if (feature.properties.value_nominal < 350) {return layer.setStyle({fillColor:'#af866c'})}
+                                    else if (feature.properties.value_nominal < 500) {return layer.setStyle({fillColor:'#bf916b'})}
+                                    else if (feature.properties.value_nominal < 750) {return layer.setStyle({fillColor:'#dfa965'})}
+                                    else if (feature.properties.value_nominal < 1000) {return layer.setStyle({fillColor:'#efb85f'})}
+                                    else if (feature.properties.value_nominal >= 1000) {return layer.setStyle({fillColor:'#ffc857'})};
+                              }}).addTo(map);
+          var baseMaps = {"percent": geojson_percent,"amount": geojson_nominal};
+          L.control.layers(baseMaps).addTo(map);
+                            } );
 
       // set pane text_layer as top layer
       map.createPane('text_layer');
@@ -48,14 +80,8 @@
       var style_land = L.tileLayer('https://api.mapbox.com/styles/v1/sylwiamielnicka/cjuzcmscj1zlo1fp9vupl3qu0/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic3lsd2lhbWllbG5pY2thIiwiYSI6ImNqdWEzZGd3NDAwbXE0ZHBic2FmczAzZnMifQ.OpE-UY5HM79aKkCrivTQtw');
       var style_administrative_names = L.tileLayer('https://api.mapbox.com/styles/v1/sylwiamielnicka/cjuzd03d92kqg1fov80kfonjk/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic3lsd2lhbWllbG5pY2thIiwiYSI6ImNqdWEzZGd3NDAwbXE0ZHBic2FmczAzZnMifQ.OpE-UY5HM79aKkCrivTQtw',
           {pane: 'text_layer'});
-      var geoJsonLayer = L.geoJson(postcodes
-            , {onEachFeature: function (feature, layer) {
-                  layer.bindPopup(feature.properties.name+'<br>'+feature.properties.value);
-            }
-      });
 
       // add layers to the map
-      geoJsonLayer.addTo(map);
       style_land.addTo(map);
       style_administrative_names.addTo(map);
 
