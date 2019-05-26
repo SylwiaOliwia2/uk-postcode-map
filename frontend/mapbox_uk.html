@@ -25,7 +25,7 @@
 
       mapboxgl.accessToken = 'pk.eyJ1IjoiZW5qYWxvdCIsImEiOiIzOTJmMjBiZmI2NGQ2ZjAzODhiMzhiOGI2MTI1YTk4YSJ9.sIOXXU3TPp5dLg_L3cUxhQ';
       // create map
-      var map = L.map('map').setView([53.4, 2.9916], 6);
+      var map = L.map('map').setView([53.4808, 2.2426], 6);
 
       // update postcodes json with values
       var proxyUrl = 'https://cors-anywhere.herokuapp.com/',
@@ -68,7 +68,7 @@
                                     else if (feature.properties.value_nominal < 1000) {return layer.setStyle({fillColor:'#efb85f'})}
                                     else if (feature.properties.value_nominal >= 1000) {return layer.setStyle({fillColor:'#ffc857'})};
                               }}).addTo(map);
-          var baseMaps = {"percent": geojson_percent,"amount": geojson_nominal};
+          var baseMaps = {"Percent of FIT panels added to OSM": geojson_percent,"Number of panels added to OSM": geojson_nominal};
           L.control.layers(baseMaps).addTo(map);
                             } );
 

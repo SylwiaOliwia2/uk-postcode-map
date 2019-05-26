@@ -27,7 +27,7 @@ def panelsFromFederalData(folder_with_input_files='UK_Installed_pannels', folder
             Folder should be located in the same directory as functions_panels_amount file.
     :return:
     '''
-
+    print("Get number of solar panels installed under the Feed-in Tariff (FIT).")
     dirname = os.path.dirname(__file__)
     folder = os.path.join(dirname, folder_with_input_files)
 
@@ -48,6 +48,7 @@ def panelsFromFederalData(folder_with_input_files='UK_Installed_pannels', folder
     number_of_panels = pd.concat(installed_panels_locations, axis=1, sort=True).fillna(0).astype(int).sum(axis=1)
     with open(os.path.join(dirname, folder_with_output_files, "OSM_federal.json"), 'w') as fp:
         json.dump(number_of_panels.to_json(), fp)
+    print("Done.")
 
     return number_of_panels.to_json()
 
@@ -63,7 +64,7 @@ def getSolarPanelsFromOSM(osm_from_pickle=False, folder_with_output_files='data'
     :return: json with node coordinates
     '''
     dirname = os.path.dirname(__file__)
-
+    print("Query Open Street Map for solar panels in the UK.")
     if osm_from_pickle:
         # TODO: if no pickled data in folder- query OSM
         with open(os.path.join(dirname, folder_with_output_files, "residential_panels.pkl"), 'rb') as f:
@@ -105,6 +106,7 @@ def getSolarPanelsFromOSM(osm_from_pickle=False, folder_with_output_files='data'
 
         with open(os.path.join(dirname, folder_with_output_files, picklename + ".pkl"), 'wb') as f:
             pickle.dump(osm_queried_panels, f)
+    print("Done.")
 
     return osm_queried_panels
 
@@ -119,6 +121,7 @@ def getPostCodesOSMPannels(osm_queried_panels, osm_postcodes_from_json=False, ra
     :param osm_postcodes_from_json: bool, if post codes for Solar Panels should be loaded from json instead of querying the api
     :return: post codes and amount of Solar panels within it (json)
     '''
+    print("Query post codes for solar panels from OSM.")
     dirname = os.path.dirname(__file__)
 
     if osm_postcodes_from_json:
@@ -142,6 +145,7 @@ def getPostCodesOSMPannels(osm_queried_panels, osm_postcodes_from_json=False, ra
         # save to json
         with open(os.path.join(dirname, folder_with_output_files, "OSM_panels.json"), 'w') as fp:
             json.dump(post_codes_frequency, fp)
+    print("Done.")
 
     return post_codes_frequency
 
@@ -154,6 +158,7 @@ def summaryPanelsPerPostcode(panels_federal_data_aggr_json, panels_from_OSM_aggr
             Name without the path. Folder should be located in the same directory as functions_panels_amount file.
     :return: save stats to json file
     '''
+    print("Create statistics for each post code.")
     dirname = os.path.dirname(__file__)
 
     # Calculate statistics for panels placed on OSM map
@@ -164,11 +169,14 @@ def summaryPanelsPerPostcode(panels_federal_data_aggr_json, panels_from_OSM_aggr
     # TODO: Deal with UNKNOWN in UK_installed_panels_summary ?
     with open(os.path.join(dirname, folder_with_output_files, "panels_stats.json"), 'w') as fp:
         json.dump(panels_plotted_on_OSM, fp)
+    print("Done.")
+
     return panels_plotted_on_OSM
 
 
 def updateSaveGeojson(panels_plotted_on_OSM):
 
+    print("Add coordinates to postcode statistcics, save them in 'fromntend' folder.")
     dirname = os.path.dirname(__file__)
     postcodes_frequency = json.load(codecs.open(os.path.join(dirname, "data", "postcodes.json"), 'r', 'utf-8-sig'))
 
@@ -182,6 +190,7 @@ def updateSaveGeojson(panels_plotted_on_OSM):
 
     with open(os.path.join(dirname, "..", "frontend", "postcodes_updated.json"), 'w') as fp:
         json.dump(postcodes_frequency, fp)
+    print("Saved.")
 
 
 if __name__ == '__main__':
