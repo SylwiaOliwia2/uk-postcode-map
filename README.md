@@ -37,7 +37,7 @@ There are **~850k** photovoltaic records in total; **14k** of them (**2%**) with
 manually updated, accordingly to the specification above (unfortunately python crashed to open original _xlsx_ files 
 containing images).
 
-##Solar Pannels in OSM
+## Solar Pannels in OSM
 The information about amount of solar panels provided for each postcode is retrieved in two steps:
 1. Solar panels are queried from OSM via overpass api. 
 2. The closest postcode is queried for each solar panel via postcodes.io api
@@ -52,7 +52,7 @@ The file was preprocessed:
 2. Original file was lacking several postcodes, which were manually added.
 3. File was saved as geojson: _data_preprocessing/data/postcodes.js_.
 
-# TODO:
+## TODO:
 * Add missing postcodes to geojson (they disappeared due to postcode shapes simplification): 
 BN42, CF47, CH47, DA18, DT1, FY2, G34, GL1, XH1, OX28, PE35, PL31, TA15, TF5, TN1, TN10
 * automate downloading and preprocessing FIT data
