@@ -1,6 +1,8 @@
 uk-postcode-map
 ===============
 
+![UK map](https://sylwia.hs3.linux.pl/my_files/uk_photovoltaics_backend/UK_map.png)
+
 The map shows how many percent of "feed-in tariff" ([FIT](https://www.ofgem.gov.uk/environmental-programmes/fit/contacts-guidance-and-resources/public-reports-and-data-fit/installation-reports)) 
 panels was put on the Open Street Map (OSM) for UK. It was initially created for [OpenClimateFix](http://openclimatefix.discourse.group/) 
 contributors to indicate which [postcode districts](https://en.wikipedia.org/wiki/Postcodes_in_the_United_Kingdom#Formatting) 
@@ -9,7 +11,7 @@ lack information about solar panels location.
 # How to use
 To see the map, open the _frontend/mapbox_uk.html_ file in the browser.
 
-To get the newest data form OSM about the amount of solar panels in the UK postcode areas,type in the console:
+To get the newest data form OSM about the amount of solar panels in the UK postcode areas, type in the console:
  
 `python data_preprocessing/calculate_stats_for_postcodes.py`
 
