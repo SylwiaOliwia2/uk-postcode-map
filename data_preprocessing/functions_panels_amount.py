@@ -176,7 +176,7 @@ def summaryPanelsPerPostcode(panels_federal_data_aggr_json, panels_from_OSM_aggr
 
 def updateSaveGeojson(panels_plotted_on_OSM):
 
-    print("Add coordinates to postcode statistcics, save them in 'fromntend' folder.")
+    print("Add coordinates to postcode statistcics, save them in 'frontend' folder.")
     dirname = os.path.dirname(__file__)
     postcodes_frequency = json.load(codecs.open(os.path.join(dirname, "data", "postcodes.json"), 'r', 'utf-8-sig'))
 
@@ -188,8 +188,9 @@ def updateSaveGeojson(panels_plotted_on_OSM):
         postcodes_frequency["features"][n]["properties"]["value_nominal"] = panels_plotted_on_OSM["nominal"].get(postcode, 0)
         postcodes_frequency["features"][n]["properties"]["value_percent"] = panels_plotted_on_OSM["percent"].get(postcode, 0)
 
-    with open(os.path.join(dirname, "..", "frontend", "postcodes_updated.json"), 'w') as fp:
-        json.dump(postcodes_frequency, fp)
+    geojson_as_string = "var geojson_file = " + json.dumps(postcodes_frequency) + ";"
+    with open(os.path.join(dirname, "..", "frontend", "postcodes_updated.js"), 'w') as fp:
+        fp.write(geojson_as_string)
     print("Saved.")
 
 

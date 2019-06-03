@@ -16,7 +16,7 @@ To get the newest data form OSM about the amount of solar panels in the UK postc
 The final data will be saved in _frontend/postcodes_updated.json_. The intermediate files (containing raw query results) will 
 be saved in _data_preprocessing/data_.
 
-The optional parameters for `calculate_stats_for_postcodes` (useful when updating only FIT data and by debuging):
+The optional parameters for `calculate_stats_for_postcodes` (useful when updating only FIT data and by debugging):
 * `--osm_from_pickle` – instead of querying solar panels coordinates from OSM, use already saved data from the recent search
 * `--osm_postcodes_from_json` – instead of querying postcode for each solar panel from OSM, use already saved results from 
 the recent search
@@ -28,7 +28,7 @@ and update them manually according to _Methodology_ section.
 ## FIT data
 The FIT data used on the map come from [this website](https://www.ofgem.gov.uk/publications-and-updates/feed-tariff-installation-report-31-march-2019). 
 Each of the three files was manually pivoted (count for each _Installation Postcode_), filtered (_Technology=Photovoltaic_) and saved in _data_preprocessing/UK_Installed_pannels_ as **csv**, with two columns:
-* first - postcode dictrict names.
+* first - postcode district names.
 * second - count of panels with given postcode 
 
 There are **~850k** photovoltaic records in total; **14k** of them (**2%**) with postal code _UNKNOWN_. The FIT files can be 
@@ -48,10 +48,10 @@ The original file with postcode coordinates was downloaded from [here](https://r
 The file was preprocessed:
 1. Postcode shapes were simplified with _Mapshaper_ asd saved as _shp_
 2. Original file was lacking several postcodes, which were manually added.
-3. File was saved as geojson: _data_preprocessing/data/postcodes.json_.
+3. File was saved as geojson: _data_preprocessing/data/postcodes.js_.
 
 # TODO:
-* **read geojson file from _frontend_ folder (currently the map is loaded from external link in _mapbox_uk.html_)**. 
 * Add missing postcodes to geojson (they disappeared due to postcode shapes simplification): 
 BN42, CF47, CH47, DA18, DT1, FY2, G34, GL1, XH1, OX28, PE35, PL31, TA15, TF5, TN1, TN10
 * automate downloading and preprocessing FIT data
+* approximate UNKNOWN postcodes (from FIT data)
