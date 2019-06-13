@@ -186,7 +186,7 @@ def updateSaveGeojson(panels_plotted_on_OSM):
         # return nominal_value or 0 if not found
         # return percent_value or zero if not found
         postcodes_frequency["features"][n]["properties"]["value_nominal"] = panels_plotted_on_OSM["nominal"].get(postcode, 0)
-        postcodes_frequency["features"][n]["properties"]["value_percent"] = panels_plotted_on_OSM["percent"].get(postcode, 0)
+        postcodes_frequency["features"][n]["properties"]["value_percent"] = panels_plotted_on_OSM["percent"].get(postcode, -1)
 
     geojson_as_string = "var geojson_file = " + json.dumps(postcodes_frequency) + ";"
     with open(os.path.join(dirname, "..", "frontend", "postcodes_updated.js"), 'w') as fp:
