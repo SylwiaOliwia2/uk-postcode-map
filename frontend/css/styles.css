@@ -1,0 +1,15 @@
+body { margin:0; padding:0; }
+
+#map { position:absolute; top:0; bottom:0; width:100%; }
+
+ul{margin:0px;padding:0px}
+
+li{padding:3px; margin:0px; list-style:none;}
+
+.legend_items{
+	weight:1.5;
+	opacity:1;
+	font-family: 'Roboto', sans-serif;
+	text-shadow: 0 0 3px white;
+	color: #1a1a1a;
+}

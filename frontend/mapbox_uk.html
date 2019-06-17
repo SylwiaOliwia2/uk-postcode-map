@@ -16,19 +16,8 @@
     <script type="text/javascript" src="postcodes_updated.js"></script>
     <script src="leaflet-search/src/leaflet-search.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Roboto:500&display=swap" rel="stylesheet">
-    <style>
-      body { margin:0; padding:0; }
-      #map { position:absolute; top:0; bottom:0; width:100%; }
-      ul{margin:0px;padding:0px}
-      li{padding:3px; margin:0px; list-style:none;}
-      .legend_items{
-        weight:1.5;
-        opacity:1;
-        font-family: 'Roboto', sans-serif;
-        text-shadow: 0 0 3px white;
-        color: #1a1a1a;
-      }
-    </style>
+    <link rel="stylesheet" href="css/styles.css">
+    <script type="text/javascript" src="js/jsfile.js"></script>
   </head>
   <body>
     <div id='map'></div>
@@ -36,35 +25,14 @@
       ////////////////////////////////////////////////////////////////
       // create map
       mapboxgl.accessToken = 'pk.eyJ1IjoiZW5qYWxvdCIsImEiOiIzOTJmMjBiZmI2NGQ2ZjAzODhiMzhiOGI2MTI1YTk4YSJ9.sIOXXU3TPp5dLg_L3cUxhQ';
-      // create map
       var map = L.map('map').setView([53.4808, 2.2426], 6);
 
       //////////////////////////////
-      // define enge values and
+      // define edge values and
       var colors_percent ={0:"#404040", 10:"#59514e" , 20:"#665a53", 30:"#736556", 40:"#7f7158", 50:"#8c7f57",
                           60:"#999156", 70:"#a4a553", 80:"#a4b24e", 90:"#9fbf47", 100: "#95cb40", "above": "#84d836"};
       var colors_nominal ={0:"#404040", 40:"#59514e" , 80:"#665a53", 120:"#736556", 160:"#7f7158", 200:"#8c7f57",
                           240:"#999156", 280:"#a4a553", 320:"#a4b24e", 360:"#9fbf47", 400: "#95cb40", "above": "#84d836"};
-
-      function array_sorted_numeric_keys(dict_with_colors){
-        var key_numeric = []
-        Object.keys(dict_with_colors).forEach(k => (!isNaN(parseFloat(k)) && isFinite(k)) && key_numeric.push(parseFloat(k)));
-        return key_numeric.sort(function(a, b) {return a - b;});
-      }
-
-      function getColor2(type, value) {
-        var colors =  type == "nominal" ? colors_nominal : type == "percent"  ? colors_percent : {};
-        key_numeric = array_sorted_numeric_keys(colors)
-        var ret = ''
-        for (const [index, v] of key_numeric.entries()) {
-          if ( value <= v ) {
-            var ret = colors[v]
-            break;
-          };
-        }
-        if (ret == '') {ret = colors["above"]}
-        return ret
-      }
 
       //////////////////////////////
       // create layers
@@ -89,11 +57,11 @@
       var baseMaps = {"Number of panels added to OSM": geojson_nominal, "Percent of FIT panels added to OSM": geojson_percent};
       L.control.layers(baseMaps, null, {collapsed:false}).addTo(map);
 
-      // set pane text_layer as top layer
+      // set text as top layer
       map.createPane('text_layer');
       map.getPane('text_layer').style.zIndex = 650;
 
-      // load layers
+      // load maps
       var style_land = L.tileLayer('https://api.mapbox.com/styles/v1/sylwiamielnicka/cjuzcmscj1zlo1fp9vupl3qu0/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic3lsd2lhbWllbG5pY2thIiwiYSI6ImNqdWEzZGd3NDAwbXE0ZHBic2FmczAzZnMifQ.OpE-UY5HM79aKkCrivTQtw');
       var style_administrative_names = L.tileLayer('https://api.mapbox.com/styles/v1/sylwiamielnicka/cjuzd03d92kqg1fov80kfonjk/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic3lsd2lhbWllbG5pY2thIiwiYSI6ImNqdWEzZGd3NDAwbXE0ZHBic2FmczAzZnMifQ.OpE-UY5HM79aKkCrivTQtw',
           {pane: 'text_layer'});
@@ -116,42 +84,14 @@
     	searchControl.on('search:locationfound', function(e) {
       		if(e.layer._popup)
       			e.layer.openPopup();
-      	}).on('search:collapsed', function(e) {
-      		featuresLayer.eachLayer(function(layer) {	//restore feature color
-      			featuresLayer.resetStyle(layer);
-      		});
       	});
-	     map.addControl( searchControl );  //inizialize search control
+	     map.addControl( searchControl);  //inizialize search control
 
        ////////////////////////////////////////////////////////////////
        // legend
-
-       function removeElement(element) {
-           element && element.parentNode && element.parentNode.removeChild(element);
-       }
-
-       function create_legend(layer_id){
-          var legend = L.control({position: 'bottomleft'});
-          legend.onAdd = function (map) {
-              var div = L.DomUtil.create('div', 'info legend'),
-                  colors_dict = (layer_id == 27) ? colors_percent : colors_nominal,
-                  grades = array_sorted_numeric_keys(colors_dict),
-                  labels = [];
-              // loop through our density intervals and generate a label with a colored square for each interval
-              var type = (layer_id == 27) ? "percent" : "nominal";
-              sign = type == "percent" ? '%' : ''
-              for (var i = 0; i < grades.length; i++) {
-                   div.innerHTML +=
-                       '<li class="legend_items" style="background-color:' + getColor2(type, grades[i]) + '">' +
-                       grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + sign : sign + '+') + '</li>';
-              }
-              div.innerHTML = '<ul>' + div.innerHTML + '</ul>'
-              return div;
-           };
-          return legend;
-       }
-
        map.on('baselayerchange', function(e) {
+         // 27 - percentage layer
+         // 5581 - nominal layer
          // remove old legend
          removeElement(document.getElementsByClassName("info legend")[0]);
          // add new legend
