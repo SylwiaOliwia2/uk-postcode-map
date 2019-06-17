@@ -4,7 +4,6 @@
     <meta charset='utf-8' />
     <title>Add a GeoJSON polygon</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.54.0/mapbox-gl.css' rel='stylesheet' />
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.54.0/mapbox-gl.js'></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
@@ -16,62 +15,77 @@
       crossorigin=""></script>
     <script type="text/javascript" src="postcodes_updated.js"></script>
     <script src="leaflet-search/src/leaflet-search.js"></script>
-
-  <style>
-    body { margin:0; padding:0; }
-    #map { position:absolute; top:0; bottom:0; width:100%; }
-  </style>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:500&display=swap" rel="stylesheet">
+    <style>
+      body { margin:0; padding:0; }
+      #map { position:absolute; top:0; bottom:0; width:100%; }
+      ul{margin:0px;padding:0px}
+      li{padding:3px; margin:0px; list-style:none;}
+      .legend_items{
+        weight:1.5;
+        opacity:1;
+        font-family: 'Roboto', sans-serif;
+        text-shadow: 0 0 3px white;
+        color: #1a1a1a;
+      }
+    </style>
   </head>
   <body>
     <div id='map'></div>
     <script>
-
+      ////////////////////////////////////////////////////////////////
+      // create map
       mapboxgl.accessToken = 'pk.eyJ1IjoiZW5qYWxvdCIsImEiOiIzOTJmMjBiZmI2NGQ2ZjAzODhiMzhiOGI2MTI1YTk4YSJ9.sIOXXU3TPp5dLg_L3cUxhQ';
       // create map
       var map = L.map('map').setView([53.4808, 2.2426], 6);
-      // update postcodes json with values
+
+      //////////////////////////////
+      // define enge values and
+      var colors_percent ={0:"#404040", 10:"#59514e" , 20:"#665a53", 30:"#736556", 40:"#7f7158", 50:"#8c7f57",
+                          60:"#999156", 70:"#a4a553", 80:"#a4b24e", 90:"#9fbf47", 100: "#95cb40", "above": "#84d836"};
+      var colors_nominal ={0:"#404040", 40:"#59514e" , 80:"#665a53", 120:"#736556", 160:"#7f7158", 200:"#8c7f57",
+                          240:"#999156", 280:"#a4a553", 320:"#a4b24e", 360:"#9fbf47", 400: "#95cb40", "above": "#84d836"};
+
+      function array_sorted_numeric_keys(dict_with_colors){
+        var key_numeric = []
+        Object.keys(dict_with_colors).forEach(k => (!isNaN(parseFloat(k)) && isFinite(k)) && key_numeric.push(parseFloat(k)));
+        return key_numeric.sort(function(a, b) {return a - b;});
+      }
+
+      function getColor2(type, value) {
+        var colors =  type == "nominal" ? colors_nominal : type == "percent"  ? colors_percent : {};
+        key_numeric = array_sorted_numeric_keys(colors)
+        var ret = ''
+        for (const [index, v] of key_numeric.entries()) {
+          if ( value <= v ) {
+            var ret = colors[v]
+            break;
+          };
+        }
+        if (ret == '') {ret = colors["above"]}
+        return ret
+      }
+
+      //////////////////////////////
+      // create layers
       var geojson_percent = L.geoJson(geojson_file // apply colors to postcodes and add them to the map
-                          , { style: {opacity:1, color: '#191a1a', 'weight':1, fillColor:'#84D836'}
+                          , { style: {opacity:1, color: '#191a1a', 'weight':1, fillOpacity: 0.9}
                             , onEachFeature: function (feature, layer) {
                                 popup_message = feature.properties.value_percent == -1 ? feature.properties.name + '<br>' + "No panels in FIT dataset." : feature.properties.name + '<br>' + feature.properties.value_percent.toFixed(2) + '% panels added to OSM.'
-                                //if (feature.properties.value_percent == -1) {return feature.properties.name + '<br>' + "No panels in FIT dataset."}
-                                //else {return feature.properties.name + '<br>' + feature.properties.value_percent.toFixed(2) + '% panels added to OSM.'};
                                 layer.bindPopup(popup_message)
                                 //.on('mouseover', function (e) {this.openPopup();}) // display popup on mouseover
                                 // .on('mouseout', function (e) {this.closePopup(); }); // display popup on mouseover
-                                if (feature.properties.value_percent == -1) {return layer.setStyle({fillColor:'#969696', fillOpacity: 0.6})} // grey for post codes with no records in FIT
-                                else if (feature.properties.value_percent == 0) {return layer.setStyle({fillOpacity: 0})}
-                                else if (feature.properties.value_percent < 10) {return layer.setStyle({fillOpacity: 0.09})}
-                                else if (feature.properties.value_percent < 20) {return layer.setStyle({fillOpacity: 0.18})}
-                                else if (feature.properties.value_percent < 30) {return layer.setStyle({fillOpacity: 0.27})}
-                                else if (feature.properties.value_percent < 40) {return layer.setStyle({fillOpacity: 0.36})}
-                                else if (feature.properties.value_percent < 50) {return layer.setStyle({fillOpacity: 0.45})}
-                                else if (feature.properties.value_percent < 60) {return layer.setStyle({fillOpacity: 0.54})}
-                                else if (feature.properties.value_percent < 70) {return layer.setStyle({fillOpacity: 0.64})}
-                                else if (feature.properties.value_percent < 80) {return layer.setStyle({fillOpacity: 0.73})}
-                                else if (feature.properties.value_percent < 90) {return layer.setStyle({fillOpacity: 0.82})}
-                                else if (feature.properties.value_percent < 100) {return layer.setStyle({fillOpacity: 0.91})}
-                                else if (feature.properties.value_percent >= 100) {return layer.setStyle({fillOpacity: 1})};
+                                if (feature.properties.value_percent < 0) {return layer.setStyle({fillColor:'#969696', fillOpacity: 0.6})} // grey for post codes with no records in FIT
+                                else {return layer.setStyle({fillColor: getColor2('percent', feature.properties.value_percent)})}
                           }}).addTo(map);
+
       var geojson_nominal = L.geoJson(geojson_file // apply colors to postcodes and add them to the map
-                          , { style: {opacity:1, color: '#191a1a', 'weight':1, fillColor:'#84D836'}
+                          , { style: {opacity:1, color: '#191a1a', 'weight':1, fillColor:'#84D836',fillOpacity: 0.9}
                             , onEachFeature: function (feature, layer) {
                                 layer.bindPopup(feature.properties.name + '<br>' + feature.properties.value_nominal + ' panels added to OSM.')
-                                //.on('mouseover', function (e) {this.openPopup();}) // display popup on mouseover
-                                //.on('mouseout', function (e) {this.closePopup(); }); // display popup on mouseover
-                                if (feature.properties.value_nominal == 0) {return layer.setStyle({fillOpacity: 0})}
-                                else if (feature.properties.value_nominal < 10) {return layer.setStyle({fillOpacity: 0.09})}
-                                else if (feature.properties.value_nominal < 30) {return layer.setStyle({fillOpacity: 0.18})}
-                                else if (feature.properties.value_nominal < 50) {return layer.setStyle({fillOpacity: 0.27})}
-                                else if (feature.properties.value_nominal < 100) {return layer.setStyle({fillOpacity: 0.36})}
-                                else if (feature.properties.value_nominal < 150) {return layer.setStyle({fillOpacity: 0.45})}
-                                else if (feature.properties.value_nominal < 200) {return layer.setStyle({fillOpacity: 0.54})}
-                                else if (feature.properties.value_nominal < 350) {return layer.setStyle({fillOpacity: 0.64})}
-                                else if (feature.properties.value_nominal < 500) {return layer.setStyle({fillOpacity: 0.73})}
-                                else if (feature.properties.value_nominal < 750) {return layer.setStyle({fillOpacity: 0.82})}
-                                else if (feature.properties.value_nominal < 1000) {return layer.setStyle({fillOpacity: 0.91})}
-                                else if (feature.properties.value_nominal >= 1000) {return layer.setStyle({fillOpacity: 1})};
+                                return layer.setStyle({fillColor: getColor2('nominal', feature.properties.value_nominal)});
                           }});
+
       var baseMaps = {"Number of panels added to OSM": geojson_nominal, "Percent of FIT panels added to OSM": geojson_percent};
       L.control.layers(baseMaps, null, {collapsed:false}).addTo(map);
 
@@ -89,9 +103,8 @@
       style_land.addTo(map);
       style_administrative_names.addTo(map);
 
-
-      ////////////////////////////////////////////////////////////////v
-      // Serach location
+      ////////////////////////////////////////////////////////////////
+      // Serach box
       var searchControl = new L.Control.Search({layer: geojson_percent, propertyName: 'name', marker: false,
       		moveToLocation: function(latlng, title, map) {
       			//map.fitBounds( latlng.layer.getBounds() );
@@ -101,15 +114,54 @@
       	});
 
     	searchControl.on('search:locationfound', function(e) {
-    		if(e.layer._popup)
-    			e.layer.openPopup();
-    	}).on('search:collapsed', function(e) {
-    		featuresLayer.eachLayer(function(layer) {	//restore feature color
-    			featuresLayer.resetStyle(layer);
-    		});
-    	});
-
+      		if(e.layer._popup)
+      			e.layer.openPopup();
+      	}).on('search:collapsed', function(e) {
+      		featuresLayer.eachLayer(function(layer) {	//restore feature color
+      			featuresLayer.resetStyle(layer);
+      		});
+      	});
 	     map.addControl( searchControl );  //inizialize search control
+
+       ////////////////////////////////////////////////////////////////
+       // legend
+
+       function removeElement(element) {
+           element && element.parentNode && element.parentNode.removeChild(element);
+       }
+
+       function create_legend(layer_id){
+          var legend = L.control({position: 'bottomleft'});
+          legend.onAdd = function (map) {
+              var div = L.DomUtil.create('div', 'info legend'),
+                  colors_dict = (layer_id == 27) ? colors_percent : colors_nominal,
+                  grades = array_sorted_numeric_keys(colors_dict),
+                  labels = [];
+              // loop through our density intervals and generate a label with a colored square for each interval
+              var type = (layer_id == 27) ? "percent" : "nominal";
+              sign = type == "percent" ? '%' : ''
+              for (var i = 0; i < grades.length; i++) {
+                   div.innerHTML +=
+                       '<li class="legend_items" style="background-color:' + getColor2(type, grades[i]) + '">' +
+                       grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + sign : sign + '+') + '</li>';
+              }
+              div.innerHTML = '<ul>' + div.innerHTML + '</ul>'
+              return div;
+           };
+          return legend;
+       }
+
+       map.on('baselayerchange', function(e) {
+         // remove old legend
+         removeElement(document.getElementsByClassName("info legend")[0]);
+         // add new legend
+         var legend = create_legend(e["layer"]["_leaflet_id"])
+         legend.addTo(map);
+       });
+
+      // initial legend for percentage map
+       var legend = create_legend(27)
+       legend.addTo(map);
 
     </script>
 
