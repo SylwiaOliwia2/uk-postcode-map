@@ -44,3 +44,21 @@ function create_legend(layer_id){
     };
    return legend;
 }
+
+// search functions
+function create_search_popup(e){
+  if(e.layer._popup)
+    e.layer.openPopup();
+}
+
+function create_search_panel(layer_id){
+  var layer = (layer_id == 27) ? geojson_percent : geojson_nominal;
+  var searchControl = new L.Control.Search({ layer: layer, propertyName: 'name', marker: false,
+      moveToLocation: function(latlng, title, map) {
+        var zoom = map.getBoundsZoom(latlng.layer.getBounds());
+          map.setView(latlng, zoom); // access the zoom
+      }
+    });
+  searchControl.on('search:locationfound', e => create_search_popup(e));
+  return searchControl;
+}

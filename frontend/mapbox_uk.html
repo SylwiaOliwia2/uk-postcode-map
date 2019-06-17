@@ -28,7 +28,7 @@
       var map = L.map('map').setView([53.4808, 2.2426], 6);
 
       //////////////////////////////
-      // define edge values and
+      // define edge values
       var colors_percent ={0:"#404040", 10:"#59514e" , 20:"#665a53", 30:"#736556", 40:"#7f7158", 50:"#8c7f57",
                           60:"#999156", 70:"#a4a553", 80:"#a4b24e", 90:"#9fbf47", 100: "#95cb40", "above": "#84d836"};
       var colors_nominal ={0:"#404040", 40:"#59514e" , 80:"#665a53", 120:"#736556", 160:"#7f7158", 200:"#8c7f57",
@@ -72,36 +72,32 @@
       style_administrative_names.addTo(map);
 
       ////////////////////////////////////////////////////////////////
-      // Serach box
-      var searchControl = new L.Control.Search({layer: geojson_percent, propertyName: 'name', marker: false,
-      		moveToLocation: function(latlng, title, map) {
-      			//map.fitBounds( latlng.layer.getBounds() );
-      			var zoom = map.getBoundsZoom(latlng.layer.getBounds());
-        			map.setView(latlng, zoom); // access the zoom
-      		}
-      	});
+      // Controls - initial for percentage map
 
-    	searchControl.on('search:locationfound', function(e) {
-      		if(e.layer._popup)
-      			e.layer.openPopup();
-      	});
-	     map.addControl( searchControl);  //inizialize search control
+      //search
+      var searchControl = create_search_panel(27)
+      map.addControl( searchControl );
 
-       ////////////////////////////////////////////////////////////////
-       // legend
-       map.on('baselayerchange', function(e) {
+      // legend
+      var legend = create_legend(27)
+      legend.addTo(map);
+
+      ////////////////////////////////////////////////////////////////
+      // changes when changing layer
+      map.on('baselayerchange', function(e) {
          // 27 - percentage layer
          // 5581 - nominal layer
-         // remove old legend
+
+         // update legend
          removeElement(document.getElementsByClassName("info legend")[0]);
-         // add new legend
          var legend = create_legend(e["layer"]["_leaflet_id"])
          legend.addTo(map);
-       });
 
-      // initial legend for percentage map
-       var legend = create_legend(27)
-       legend.addTo(map);
+         // update search_box
+         removeElement(document.getElementsByClassName("leaflet-control-search")[0]);
+         var searchControl = create_search_panel(e["layer"]["_leaflet_id"])
+         map.addControl( searchControl );  //inizialize search control
+      });
 
     </script>
 

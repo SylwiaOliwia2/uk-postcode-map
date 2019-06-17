@@ -13,3 +13,5 @@ li{padding:3px; margin:0px; list-style:none;}
 	text-shadow: 0 0 3px white;
 	color: #1a1a1a;
 }
+
+.leaflet-control{border: 2px solid rgba(0,0,0,0.2);}
