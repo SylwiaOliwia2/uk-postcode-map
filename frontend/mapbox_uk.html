@@ -99,6 +99,10 @@
          map.addControl( searchControl );  //inizialize search control
       });
 
+     // display last data update date
+     var control_atrib = document.getElementsByClassName("leaflet-control-attribution")[0].innerText;
+     control_atrib = control_atrib + ". Last data update: " + geojson_file["update_date"].toString();
+     document.getElementsByClassName("leaflet-control-attribution")[0].innerText = control_atrib;
     </script>
 
   </body>

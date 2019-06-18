@@ -6,6 +6,7 @@ import collections
 import re
 import json
 import pickle
+import datetime
 
 '''
 Funcions used to calculate number and percentage of solar pannels already provided to OpenStreetMap
@@ -187,6 +188,8 @@ def updateSaveGeojson(panels_plotted_on_OSM):
         # return percent_value or zero if not found
         postcodes_frequency["features"][n]["properties"]["value_nominal"] = panels_plotted_on_OSM["nominal"].get(postcode, 0)
         postcodes_frequency["features"][n]["properties"]["value_percent"] = panels_plotted_on_OSM["percent"].get(postcode, -1)
+
+    postcodes_frequency["update_date"] = str(datetime.datetime.now())
 
     geojson_as_string = "var geojson_file = " + json.dumps(postcodes_frequency) + ";"
     with open(os.path.join(dirname, "..", "frontend", "postcodes_updated.js"), 'w') as fp:
