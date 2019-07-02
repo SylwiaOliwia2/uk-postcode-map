@@ -9,19 +9,16 @@ contributors to indicate which [postcode districts](https://en.wikipedia.org/wik
 lack information about solar panels location. 
 
 # How to use
+Clone the repository and run in the console `python setup.py install`.
+
 To see the map, open the _frontend/mapbox_uk.html_ file in the browser.
 
-To get the newest data form OSM about the amount of solar panels in the UK postcode areas, type in the console:
- 
-`python data_preprocessing/calculate_stats_for_postcodes.py`
-
-The final data will be saved in _frontend/postcodes_updated.json_. The intermediate files (containing raw query results) will 
+To get the newest data form OSM about the amount of solar panels in the UK postcode areas, type in the console`python data_preprocessing/calculate_stats_for_postcodes.py`. The script will at first retrive coordinates for each solar panel in the UK added to OSM. Then, for each panels coordinates, the postcode is retrived. The final data will be saved in _frontend/postcodes_updated.js_. The intermediate files (containing raw query results) will 
 be saved in _data_preprocessing/data_.
 
-The optional parameters for `calculate_stats_for_postcodes` (useful when updating only FIT data and by debugging):
-* `--osm_from_pickle` – instead of querying solar panels coordinates from OSM, use already saved data from the recent search
-* `--osm_postcodes_from_json` – instead of querying postcode for each solar panel from OSM, use already saved results from 
-the recent search
+The optional parameters for `calculate_stats_for_postcodes` (useful by debugging):
+* `--osm_from_pickle` – instead of querying solar panels coordinates from OSM, use the recently crawled data
+* `--osm_postcodes_from_json` – instead of querying postcode for each solar panel from OSM, use the recently crawled data
 
 To use th newest FIT data – download the latest files [here](https://www.ofgem.gov.uk/environmental-programmes/fit/contacts-guidance-and-resources/public-reports-and-data-fit/installation-reports) 
 and update them manually according to _Methodology_ section.
