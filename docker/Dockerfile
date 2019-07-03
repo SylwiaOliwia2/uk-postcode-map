@@ -8,4 +8,4 @@ COPY frontend /docker/frontend
 RUN pip install requests==2.22.0
 RUN pip install pandas==0.24.2
 
-CMD ["python", "/docker/data_preprocessing/calculate_stats_for_postcodes.py"]
+CMD ["python3", "/docker/data_preprocessing/calculate_stats_for_postcodes.py"]
