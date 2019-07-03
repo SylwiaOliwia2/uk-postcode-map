@@ -1,14 +1,28 @@
 uk-postcode-map
 ===============
 
-![UK map](https://sylwia.hs3.linux.pl/my_files/uk_photovoltaics_backend/UK_map.png)
+![UK_MAP](https://sylwia.hs3.linux.pl/my_files/uk_photovoltaics_map/map_02072019.png)
 
 The map shows how many percent of "feed-in tariff" ([FIT](https://www.ofgem.gov.uk/environmental-programmes/fit/contacts-guidance-and-resources/public-reports-and-data-fit/installation-reports)) 
 panels was put on the Open Street Map (OSM) for UK. It was initially created for [OpenClimateFix](http://openclimatefix.discourse.group/) 
 contributors to indicate which [postcode districts](https://en.wikipedia.org/wiki/Postcodes_in_the_United_Kingdom#Formatting) 
 lack information about solar panels location. The code (Python 3.5) enable also to update the amount of panels in the UK to display.
 
+The map is beeing updated daily and can be found [HERE](https://sylwia.hs3.linux.pl/my_files/uk_photovoltaics_map/frontend/mapbox_uk.html).
+
 # How to use
+## Docker
+Build the image (at first navigate the folder above the docker folder, ex. _uk-postcode-map_):
+`docker build -t uk_postcode_map -f docker/Dockerfile . `
+
+Get the newest data form OSM about the amount of solar panels in the UK postcode areas:
+`sudo docker run --name uk_postcode_map -it uk_postcode_map`
+
+Display the map:
+1. Copy the map folder from the container (it will create the new folder _uk_postcode_map_frontend_ in the current folder):`sudo docker cp uk_postcode_map:/docker/frontend uk_postcode_map_frontend`
+2. Display the map (you can replace firefox with another browser) `firefox uk_postcode_map_frontend/frontend/mapbox_uk.html`
+
+## Local
 Clone the repository and run in the console `python setup.py install`.
 
 To see the map, open the _frontend/mapbox_uk.html_ file in the browser.
