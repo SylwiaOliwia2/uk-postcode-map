@@ -77,7 +77,7 @@ def getSolarPanelsFromOSM(osm_from_pickle=False, folder_with_output_files='data'
         solar_ways_query = """
             [out:json];
             area["name"="United Kingdom"]->.searchArea;
-            (way(area.searchArea)["generator:source"="solar"];
+            (way(area.searchArea)["generator:source"="solar"]['generator:output:electricity'='yes'];
             );
             out body;
             >;
@@ -95,7 +95,7 @@ def getSolarPanelsFromOSM(osm_from_pickle=False, folder_with_output_files='data'
             [out:json];
             area["name"="United Kingdom"]->.searchArea;
             (
-             node(area.searchArea)["generator:source"="solar"];
+             node(area.searchArea)["generator:source"="solar"]['generator:output:electricity'='yes'];
             );
             out body;
             >;
