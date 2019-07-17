@@ -52,7 +52,7 @@ function create_search_popup(e){
 }
 
 function create_search_panel(layer_id){
-  var layer = (layer_id == 27) ? geojson_percent : geojson_nominal;
+  var layer = (layer_id == 27) ? geojson_percent : (layer_id == 5581) ? geojson_nominal : geojson_nominal_remain;
   var searchControl = new L.Control.Search({ layer: layer, propertyName: 'name', marker: false,
       moveToLocation: function(latlng, title, map) {
         var zoom = map.getBoundsZoom(latlng.layer.getBounds());

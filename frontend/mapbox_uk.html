@@ -54,7 +54,14 @@
                                 return layer.setStyle({fillColor: getColor2('nominal', feature.properties.value_nominal)});
                           }});
 
-      var baseMaps = {"Number of panels added to OSM": geojson_nominal, "Percent of FIT panels added to OSM": geojson_percent};
+      var geojson_nominal_remain = L.geoJson(geojson_file // apply colors to postcodes and add them to the map
+                          , { style: {opacity:1, color: '#191a1a', 'weight':1, fillColor:'#84D836',fillOpacity: 0.9}
+                            , onEachFeature: function (feature, layer) {
+                                layer.bindPopup(feature.properties.name + '<br>' + feature.properties.value_nominal_remain + ' remaining to be added OSM.')
+                                return layer.setStyle({fillColor: getColor2('nominal', feature.properties.value_nominal_remain)});
+                          }});
+
+      var baseMaps = {"Number of panels added to OSM": geojson_nominal, "Number of panels remaining to be added OSM": geojson_nominal_remain, "Percent of FIT panels added to OSM": geojson_percent};
       L.control.layers(baseMaps, null, {collapsed:false}).addTo(map);
 
       // set text as top layer
@@ -87,6 +94,7 @@
       map.on('baselayerchange', function(e) {
          // 27 - percentage layer
          // 5581 - nominal layer
+         // 8358 - nominal_remain layer
 
          // update legend
          removeElement(document.getElementsByClassName("info legend")[0]);
