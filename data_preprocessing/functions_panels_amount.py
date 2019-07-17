@@ -164,8 +164,11 @@ def summaryPanelsPerPostcode(panels_federal_data_aggr_json, panels_from_OSM_aggr
 
     # Calculate statistics for panels placed on OSM map
     nominal = {key: panels_from_OSM_aggr_json.get(key, 0) for key in panels_from_OSM_aggr_json.keys()}
+    nominal_remain = {key: panels_federal_data_aggr_json[key] - panels_from_OSM_aggr_json.get(key, 0) for key in panels_federal_data_aggr_json.keys()}
     percent = {key: panels_from_OSM_aggr_json.get(key, 0) / panels_federal_data_aggr_json[key] * 100 for key in panels_federal_data_aggr_json.keys()}
-    panels_plotted_on_OSM = {"nominal": {k: int(v) for k, v in nominal.items()}, "percent": percent}
+    panels_plotted_on_OSM = {"nominal": {k: int(v) for k, v in nominal.items()},
+                             "nominal_remain": {k: int(v) for k, v in nominal_remain.items()},
+                             "percent": percent}
 
     # TODO: Deal with UNKNOWN in UK_installed_panels_summary ?
     with open(os.path.join(dirname, folder_with_output_files, "panels_stats.json"), 'w') as fp:
@@ -186,6 +189,7 @@ def updateSaveGeojson(panels_plotted_on_OSM):
         ## for each postcode in file with geolocations:
         # return nominal_value or 0 if not found
         # return percent_value or zero if not found
+        postcodes_frequency["features"][n]["properties"]["value_nominal_remain"] = panels_plotted_on_OSM["nominal_remain"].get(postcode, 0)
         postcodes_frequency["features"][n]["properties"]["value_nominal"] = panels_plotted_on_OSM["nominal"].get(postcode, 0)
         postcodes_frequency["features"][n]["properties"]["value_percent"] = panels_plotted_on_OSM["percent"].get(postcode, -1)
 
